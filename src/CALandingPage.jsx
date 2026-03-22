@@ -32,12 +32,12 @@ import {
 
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Mulish:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Nunito:wght@300;400;500;600;700&family=Exo+2:wght@600;700;800&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Mulish', sans-serif; overflow-x: hidden; background: #07090f; }
-    .font-serif { font-family: 'Libre Baskerville', serif !important; }
-    .font-num   { font-family: 'Barlow Condensed', sans-serif !important; letter-spacing: 0.02em; }
+    body { font-family: 'Nunito', sans-serif; overflow-x: hidden; background: #07090f; }
+    .font-serif { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    .font-num   { font-family: 'Exo 2', sans-serif !important; letter-spacing: 0.02em; }
     :root {
       --bg:#07090f; --bg-card:#0d1017; --bg-elevated:#131824;
       --blue:#1d9bf0; --blue-bright:#38bdf8; --blue-glow:rgba(29,155,240,0.35);
