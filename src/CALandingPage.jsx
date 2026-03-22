@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import varaiLogo from "./assets/VarAI_logo.png";
 import {
   BarChart2,
   FileText,
+  Search,
+  Building2,
   TrendingUp,
   BookOpen,
   Zap,
   Lock,
   Smartphone,
+  MessageCircle,
   ChevronDown,
   ArrowUp,
   Shield,
@@ -21,6 +25,9 @@ import {
   UserCheck,
   Mic,
   Link2,
+  Target,
+  Rocket,
+  Paperclip,
 } from "lucide-react";
 
 const FontLoader = () => (
@@ -44,10 +51,6 @@ const FontLoader = () => (
     @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
     @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.6)} }
     @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-    @keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(400%)} }
-    @keyframes nodepulse { 0%,100%{opacity:0.4;r:4} 50%{opacity:1;r:6} }
-    @keyframes dash { to{stroke-dashoffset:-20} }
-
     .animate-float-1{animation:float 5s ease-in-out infinite}
     .animate-float-2{animation:float 4s ease-in-out 1.5s infinite}
     .animate-float-3{animation:float 6s ease-in-out 0.8s infinite}
@@ -61,18 +64,6 @@ const FontLoader = () => (
       -webkit-text-fill-color:transparent; background-clip:text;
       animation:shimmer 4s linear infinite;
     }
-
-    /* ── FIX: H1 spacing so letters never touch ── */
-    h1.hero-title {
-      line-height: 1.32 !important;
-      letter-spacing: -0.01em;
-      word-spacing: 0.05em;
-    }
-    h1.hero-title br { display:block; content:""; margin-bottom: 0.1em; }
-
-    /* ── Testimonials heading spacing fix ── */
-    h2.testi-h2 { line-height: 1.3 !important; letter-spacing: -0.01em; }
-
     .hover-card { transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease; cursor:default; }
     .hover-card:hover { transform:translateY(-6px) scale(1.01); box-shadow:0 16px 48px rgba(29,155,240,0.2),0 0 28px rgba(29,155,240,0.1); border-color:rgba(29,155,240,0.55) !important; }
     .hero-card { transition:transform 0.35s ease,box-shadow 0.35s ease,border-color 0.35s ease; }
@@ -80,8 +71,8 @@ const FontLoader = () => (
     .hero-card-teal:hover { box-shadow:0 20px 48px rgba(45,212,191,0.22),0 0 28px rgba(45,212,191,0.14) !important; border-color:rgba(45,212,191,0.6) !important; }
     .faq-item { transition:border-color 0.25s ease,box-shadow 0.25s ease,transform 0.25s ease; }
     .faq-item:hover { border-color:rgba(29,155,240,0.4) !important; box-shadow:0 4px 20px rgba(29,155,240,0.08); transform:translateX(4px); }
-    .test-card { transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease; box-shadow:0 0 0 1px rgba(29,155,240,0.3), 0 0 12px rgba(29,155,240,0.12); border-color:rgba(29,155,240,0.3) !important; }
-    .test-card:hover { transform:translateY(-6px); box-shadow:0 0 0 1px rgba(29,155,240,0.6), 0 0 22px rgba(29,155,240,0.28), 0 16px 40px rgba(29,155,240,0.12); border-color:rgba(29,155,240,0.6) !important; }
+    .test-card { transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease; }
+    .test-card:hover { transform:translateY(-8px); box-shadow:0 20px 48px rgba(29,155,240,0.15),0 0 24px rgba(29,155,240,0.08); border-color:rgba(29,155,240,0.45) !important; }
     .stat-item { transition:transform 0.25s ease; cursor:default; }
     .stat-item:hover { transform:translateY(-4px); }
     .why-card { transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease; }
@@ -94,10 +85,10 @@ const FontLoader = () => (
     .btn-glow { position:relative; background:linear-gradient(135deg,#1d9bf0,#2dd4bf); color:#07090f; font-weight:700; border:none; transition:all 0.3s ease; overflow:hidden; cursor:pointer; }
     .btn-glow::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#2dd4bf,#1d9bf0); opacity:0; transition:opacity 0.3s ease; }
     .btn-glow:hover::after { opacity:1; }
-    .btn-glow:hover { box-shadow:0 0 14px rgba(29,155,240,0.35),0 0 28px rgba(45,212,191,0.12); transform:translateY(-2px); }
+    .btn-glow:hover { box-shadow:0 0 8px rgba(29,155,240,0.25),0 0 14px rgba(45,212,191,0.1); transform:translateY(-1px); }
     .btn-glow > * { position:relative; z-index:1; }
     .btn-outline-glow { background:transparent; border:1px solid var(--border); color:var(--text); transition:all 0.3s ease; cursor:pointer; }
-    .btn-outline-glow:hover { border-color:var(--blue); color:var(--blue-bright); box-shadow:0 0 20px var(--blue-glow),inset 0 0 20px rgba(29,155,240,0.04); }
+    .btn-outline-glow:hover { border-color:var(--blue); color:var(--blue-bright); box-shadow:0 0 8px rgba(29,155,240,0.2); }
     .card-shine { background:var(--bg-card); border:1px solid var(--border); position:relative; overflow:hidden; transition:all 0.35s ease; }
     .card-shine::before { content:''; position:absolute; top:0; left:-100%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(29,155,240,0.07),transparent); transition:left 0.6s ease; pointer-events:none; }
     .card-shine:hover { border-color:var(--border-shine); box-shadow:0 0 28px rgba(29,155,240,0.14),0 8px 32px rgba(0,0,0,0.5); }
@@ -118,55 +109,99 @@ const FontLoader = () => (
     .dark-input { background:var(--bg-elevated); border:1px solid var(--text-dim); color:var(--text); border-radius:6px; transition:all 0.25s ease; font-family:'Mulish',sans-serif; }
     .dark-input:focus,.dark-input:focus-within { outline:none; border-color:var(--blue) !important; box-shadow:0 0 0 3px rgba(29,155,240,0.15),0 0 14px rgba(29,155,240,0.1); }
     .dark-input::placeholder { color:var(--text-muted); opacity:0.45; }
-    .back-top { position:fixed; bottom:28px; right:28px; z-index:99; width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#1d9bf0,#2dd4bf); color:#07090f; display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; box-shadow:0 0 18px rgba(29,155,240,0.5); transition:opacity 0.3s,transform 0.3s,box-shadow 0.2s; }
+    .back-top { position:fixed; bottom:28px; right:28px; z-index:99; width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#1d9bf0,#2dd4bf); color:#07090f; display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; box-shadow:0 0 8px rgba(29,155,240,0.3); transition:opacity 0.3s,transform 0.3s,box-shadow 0.2s; }
     .back-top.gone { opacity:0; transform:translateY(16px); pointer-events:none; }
-    .back-top:hover { box-shadow:0 0 32px rgba(29,155,240,0.8),0 0 60px rgba(45,212,191,0.3); transform:translateY(-2px); }
+    .back-top:hover { box-shadow:0 0 12px rgba(29,155,240,0.45),0 0 20px rgba(45,212,191,0.15); transform:translateY(-2px); }
     .orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(90px); }
     .grid-bg { background-image:linear-gradient(rgba(29,155,240,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(29,155,240,0.03) 1px,transparent 1px); background-size:48px 48px; }
     .dropdown-trigger { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; background:var(--bg-elevated); border:1px solid var(--text-dim); border-radius:6px; color:var(--text); transition:all 0.25s ease; font-family:'Mulish',sans-serif; font-size:0.875rem; }
     .dropdown-trigger:hover,.dropdown-trigger.open { border-color:var(--blue); box-shadow:0 0 0 3px rgba(29,155,240,0.15),0 0 14px rgba(29,155,240,0.08); }
     .dropdown-trigger.placeholder { color:rgba(107,127,168,0.45); }
 
-    /* ── VISION BENTO CARDS ── */
-    .vcard {
+    /* ══ LOGO WHITE CIRCLE ══ */
+    .logo-circle {
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(255,255,255,0.25), 0 0 24px rgba(29,155,240,0.2);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .logo-circle:hover {
+      box-shadow: 0 0 18px rgba(255,255,255,0.35), 0 0 32px rgba(29,155,240,0.35);
+      transform: scale(1.05);
+    }
+    .logo-circle img {
+      object-fit: contain;
+    }
+
+    /* ══ H1 SPACING ══ */
+    h1.hero-title { line-height:1.18 !important; letter-spacing:0.02em; word-spacing:0.1em; }
+    h1.hero-title br { display:block; content:""; margin-bottom:0.18em; }
+
+    /* ══ GLOBAL HEADING LETTER FIX ══ */
+    h1, h2, h3 { letter-spacing:0.03em !important; word-spacing:0.08em !important; }
+    .font-serif { letter-spacing:0.03em !important; }
+    span.shine-text { letter-spacing:0.03em !important; }
+
+    /* ══ ANIMATED WAVEFORM BARS ══ */
+    @keyframes wave1 { 0%,100%{height:20%} 50%{height:90%} }
+    @keyframes wave2 { 0%,100%{height:50%} 50%{height:20%} }
+    @keyframes wave3 { 0%,100%{height:70%} 50%{height:40%} }
+    @keyframes wave4 { 0%,100%{height:30%} 50%{height:100%} }
+    @keyframes wave5 { 0%,100%{height:80%} 50%{height:30%} }
+    @keyframes wave6 { 0%,100%{height:40%} 50%{height:80%} }
+    .wave-bar { border-radius:3px; background:rgba(45,212,191,0.55); width:100%; box-shadow:0 -1px 3px rgba(45,212,191,0.25); }
+    .wave-bar:nth-child(6n+1){animation:wave1 1.1s ease-in-out infinite}
+    .wave-bar:nth-child(6n+2){animation:wave2 0.9s ease-in-out 0.1s infinite}
+    .wave-bar:nth-child(6n+3){animation:wave3 1.3s ease-in-out 0.2s infinite}
+    .wave-bar:nth-child(6n+4){animation:wave4 0.8s ease-in-out 0.3s infinite}
+    .wave-bar:nth-child(6n+5){animation:wave5 1.2s ease-in-out 0.15s infinite}
+    .wave-bar:nth-child(6n+6){animation:wave6 1.0s ease-in-out 0.25s infinite}
+    .static-bar { border-radius:3px; width:100%; animation:none !important; box-shadow:0 -2px 4px rgba(45,212,191,0.9); }
+
+    /* ══ VISION GRID ══ */
+    .vision-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .vision-grid .vision-odd { grid-column:1/2; }
+    .vision-grid .vision-even { grid-column:2/3; }
+    .vision-grid .vision-full { grid-column:1/3; }
+    @keyframes visionPulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.15)} }
+    .vision-dot { animation:visionPulse 2.5s ease-in-out infinite; }
+    .vision-item {
       position:relative; overflow:hidden;
-      background:var(--bg-card);
-      transition:transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease;
     }
-    .vcard::before {
-      content:''; position:absolute; top:0; left:-80%; width:60%; height:100%;
-      background:linear-gradient(90deg,transparent,rgba(29,155,240,0.06),transparent);
-      transition:left 0.7s ease; pointer-events:none;
+    .vision-item::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,rgba(29,155,240,0.05),transparent);
+      opacity:0; transition:opacity 0.3s ease;
     }
-    .vcard:hover { transform:translateY(-5px); box-shadow:0 18px 48px rgba(29,155,240,0.18); }
-    .vcard:hover::before { left:130%; }
-    .vcard:hover .vcard-icon { transform:scale(1.12); }
-    .vcard-icon { transition:transform 0.3s ease; }
+    .vision-item:hover { transform:translateY(-5px) scale(1.02); box-shadow:0 16px 40px rgba(29,155,240,0.18); border-color:rgba(29,155,240,0.5) !important; }
+    .vision-item:hover::after { opacity:1; }
 
-    /* scanline animation for card 01 */
-    .scanline-bar {
-      position:absolute; left:0; right:0; height:2px;
-      background:linear-gradient(90deg,transparent,rgba(29,155,240,0.5),transparent);
-      animation:scanline 3s linear infinite;
-    }
-    /* animated dashes for SVG lines */
-    .anim-dash { animation:dash 1.5s linear infinite; }
+    /* ══ FAQ ANSWER PADDING ══ */
+    .faq-answer { padding:16px 24px 20px !important; }
 
-    /* waveform bars */
-    @keyframes waveBar { 0%,100%{transform:scaleY(0.3)} 50%{transform:scaleY(1)} }
-    .wbar { transform-origin:bottom; border-radius:3px 3px 0 0; }
-    .wbar:nth-child(1){animation:waveBar 1.1s ease-in-out 0.0s infinite}
-    .wbar:nth-child(2){animation:waveBar 1.1s ease-in-out 0.1s infinite}
-    .wbar:nth-child(3){animation:waveBar 1.1s ease-in-out 0.2s infinite}
-    .wbar:nth-child(4){animation:waveBar 1.1s ease-in-out 0.15s infinite}
-    .wbar:nth-child(5){animation:waveBar 1.1s ease-in-out 0.05s infinite}
-    .wbar:nth-child(6){animation:waveBar 1.1s ease-in-out 0.25s infinite}
-    .wbar:nth-child(7){animation:waveBar 1.1s ease-in-out 0.18s infinite}
-    .wbar:nth-child(8){animation:waveBar 1.1s ease-in-out 0.08s infinite}
-    .wbar:nth-child(9){animation:waveBar 1.1s ease-in-out 0.22s infinite}
-    .wbar:nth-child(10){animation:waveBar 1.1s ease-in-out 0.12s infinite}
-    .wbar:nth-child(11){animation:waveBar 1.1s ease-in-out 0.03s infinite}
-    .wbar:nth-child(12){animation:waveBar 1.1s ease-in-out 0.17s infinite}
+    /* ══ TESTIMONIAL MASONRY ══ */
+    @keyframes cardEntrance { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+    .testi-grid { columns:1; gap:20px; }
+    @media(min-width:640px){ .testi-grid { columns:2; } }
+    @media(min-width:1024px){ .testi-grid { columns:3; } }
+    .testi-item { break-inside:avoid; margin-bottom:20px; display:inline-block; width:100%; }
+    .testi-card {
+      position:relative; overflow:hidden;
+      transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease;
+    }
+    .testi-card::before {
+      content:''; position:absolute; top:-10px; right:16px;
+      font-size:5rem; font-family:'Libre Baskerville',serif; font-weight:700;
+      line-height:1; color:transparent; pointer-events:none; user-select:none;
+    }
+    .testi-card:hover { transform:translateY(-6px); box-shadow:0 20px 48px rgba(29,155,240,0.18),0 0 24px rgba(29,155,240,0.08); border-color:rgba(29,155,240,0.5) !important; }
+    .testi-card:hover .testi-avatar { box-shadow:0 0 16px rgba(29,155,240,0.5); border-color:var(--blue-bright) !important; }
+    .testi-stars { display:flex; gap:3px; margin-bottom:14px; }
   `}</style>
 );
 
@@ -220,21 +255,59 @@ function AnimatedNumber({ target, suffix }) {
   );
 }
 
+// ════════ VARAI LOGO — white circle container
+function VarAILogo({ size = 36 }) {
+  // Circle is just slightly larger than the image — tight fit
+  const circleSize = Math.round(size * 1.08);
+  const imgSize = Math.round(size * 0.96);
+  return (
+    <div
+      className='logo-circle'
+      style={{ width: circleSize, height: circleSize }}
+    >
+      <img
+        src={varaiLogo}
+        alt='VarAI Logo'
+        width={imgSize}
+        height={imgSize}
+        style={{ objectFit: "contain" }}
+      />
+    </div>
+  );
+}
+
+// ════════ NAVBAR
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 30);
-    window.addEventListener("scroll", h);
-    return () => window.removeEventListener("scroll", h);
-  }, []);
+  const [activeSection, setActiveSection] = useState("");
+
   const links = [
-    ["Services", "#services"],
-    ["How It Works", "#howitworks"],
-    ["Why VarAI", "#whyus"],
-    ["FAQ", "#faq"],
-    ["Testimonials", "#testimonials"],
+    ["Services", "#services", "services"],
+    ["How It Works", "#howitworks", "howitworks"],
+    ["Why VarAI", "#whyus", "whyus"],
+    ["FAQ", "#faq", "faq"],
+    ["Testimonials", "#testimonials", "testimonials"],
   ];
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 30);
+      const sectionIds = links.map(([, , id]) => id);
+      let current = "";
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= window.innerHeight * 0.45) current = id;
+        }
+      }
+      setActiveSection(current);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const close = () => setMenuOpen(false);
   return (
     <>
@@ -243,116 +316,87 @@ function Navbar() {
       >
         <a
           href='#'
-          className='flex items-center gap-2.5 z-50 relative'
+          className='flex items-center gap-2.5 z-50 relative group'
           style={{ textDecoration: "none" }}
         >
-          {/* VarAI Logo Mark — stylised V with circuit/AI nodes */}
-          <svg
-            width='32'
-            height='32'
-            viewBox='0 0 32 32'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <defs>
-              <linearGradient
-                id='logoGrad'
-                x1='0'
-                y1='0'
-                x2='32'
-                y2='32'
-                gradientUnits='userSpaceOnUse'
-              >
-                <stop offset='0%' stopColor='#1d9bf0' />
-                <stop offset='100%' stopColor='#2dd4bf' />
-              </linearGradient>
-              <filter id='logoGlow'>
-                <feGaussianBlur stdDeviation='1.5' result='blur' />
-                <feMerge>
-                  <feMergeNode in='blur' />
-                  <feMergeNode in='SourceGraphic' />
-                </feMerge>
-              </filter>
-            </defs>
-            {/* Outer rounded square bg */}
-            <rect
-              width='32'
-              height='32'
-              rx='8'
-              fill='url(#logoGrad)'
-              opacity='0.12'
-            />
-            <rect
-              width='32'
-              height='32'
-              rx='8'
-              fill='none'
-              stroke='url(#logoGrad)'
-              strokeWidth='1'
-              opacity='0.5'
-            />
-            {/* V shape */}
-            <path
-              d='M8 9 L16 23 L24 9'
-              stroke='url(#logoGrad)'
-              strokeWidth='2.5'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              fill='none'
-              filter='url(#logoGlow)'
-            />
-            {/* Top-left node dot */}
-            <circle cx='8' cy='9' r='2' fill='#1d9bf0' />
-            {/* Top-right node dot */}
-            <circle cx='24' cy='9' r='2' fill='#2dd4bf' />
-            {/* Bottom apex dot — glowing */}
-            <circle cx='16' cy='23' r='2.5' fill='#38bdf8' />
-            <circle cx='16' cy='23' r='4.5' fill='#38bdf8' opacity='0.18' />
-            {/* Tiny horizontal line across mid — circuit detail */}
-            <line
-              x1='11'
-              y1='16.5'
-              x2='21'
-              y2='16.5'
-              stroke='url(#logoGrad)'
-              strokeWidth='1'
-              strokeDasharray='2 2'
-              opacity='0.5'
-            />
-          </svg>
+          <VarAILogo size={32} />
           <span
             className='font-serif text-xl md:text-2xl font-semibold tracking-wide'
-            style={{ color: "var(--text)" }}
+            style={{ color: "var(--text)", letterSpacing: "0.04em" }}
           >
-            Var<span className='shine-text'>AI</span>
+            Var
+            <span className='shine-text' style={{ letterSpacing: "0.04em" }}>
+              AI
+            </span>
           </span>
         </a>
         <ul className='hidden md:flex items-center gap-8'>
-          {links.map(([label, href]) => (
-            <li key={label}>
-              <a
-                href={href}
-                className='text-xs font-semibold tracking-widest uppercase transition-all'
-                style={{ color: "var(--text-muted)" }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = "var(--blue-bright)";
-                  e.target.style.textShadow = "0 0 12px rgba(29,155,240,0.7)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color = "var(--text-muted)";
-                  e.target.style.textShadow = "none";
-                }}
-              >
-                {label}
-              </a>
-            </li>
-          ))}
+          {links.map(([label, href, id]) => {
+            const isActive = activeSection === id;
+            return (
+              <li key={label}>
+                <a
+                  href={href}
+                  className='text-xs font-semibold tracking-widest uppercase transition-all duration-200'
+                  style={{
+                    color: isActive
+                      ? "var(--blue-bright)"
+                      : "var(--text-muted)",
+                    textShadow: isActive
+                      ? "0 0 14px rgba(29,155,240,0.9), 0 0 28px rgba(29,155,240,0.45)"
+                      : "none",
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--blue-bright)";
+                    e.currentTarget.style.textShadow =
+                      "0 0 14px rgba(29,155,240,0.9), 0 0 28px rgba(29,155,240,0.45)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = isActive
+                      ? "var(--blue-bright)"
+                      : "var(--text-muted)";
+                    e.currentTarget.style.textShadow = isActive
+                      ? "0 0 14px rgba(29,155,240,0.9), 0 0 28px rgba(29,155,240,0.45)"
+                      : "none";
+                  }}
+                >
+                  {label}
+                </a>
+              </li>
+            );
+          })}
+          {/* ── Join Waitlist as two-color glowy text ── */}
           <li>
             <a
               href='#waitlist'
-              className='btn-glow text-xs tracking-widest uppercase px-6 py-2.5 rounded-sm inline-block'
+              className='tracking-widest uppercase'
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.85rem",
+                letterSpacing: "0.16em",
+                textDecoration: "none",
+                background: "linear-gradient(90deg, #38bdf8, #2dd4bf)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                filter:
+                  "drop-shadow(0 0 6px rgba(29,155,240,0.8)) drop-shadow(0 0 14px rgba(45,212,191,0.55))",
+                transition: "all 0.25s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.filter =
+                  "drop-shadow(0 0 10px rgba(29,155,240,1)) drop-shadow(0 0 22px rgba(45,212,191,0.85)) drop-shadow(0 0 40px rgba(29,155,240,0.4))";
+                e.currentTarget.style.letterSpacing = "0.2em";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.filter =
+                  "drop-shadow(0 0 6px rgba(29,155,240,0.8)) drop-shadow(0 0 14px rgba(45,212,191,0.55))";
+                e.currentTarget.style.letterSpacing = "0.16em";
+              }}
             >
-              <span>Join Waitlist →</span>
+              Join Waitlist
             </a>
           </li>
         </ul>
@@ -368,71 +412,16 @@ function Navbar() {
         </button>
       </nav>
       <div className={`mobile-menu ${menuOpen ? "open" : "close"}`}>
-        <a href='#' onClick={close} className='flex items-center gap-3 mb-4'>
-          <svg
-            width='36'
-            height='36'
-            viewBox='0 0 32 32'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <defs>
-              <linearGradient
-                id='logoGradM'
-                x1='0'
-                y1='0'
-                x2='32'
-                y2='32'
-                gradientUnits='userSpaceOnUse'
-              >
-                <stop offset='0%' stopColor='#1d9bf0' />
-                <stop offset='100%' stopColor='#2dd4bf' />
-              </linearGradient>
-            </defs>
-            <rect
-              width='32'
-              height='32'
-              rx='8'
-              fill='url(#logoGradM)'
-              opacity='0.12'
-            />
-            <rect
-              width='32'
-              height='32'
-              rx='8'
-              fill='none'
-              stroke='url(#logoGradM)'
-              strokeWidth='1'
-              opacity='0.5'
-            />
-            <path
-              d='M8 9 L16 23 L24 9'
-              stroke='url(#logoGradM)'
-              strokeWidth='2.5'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              fill='none'
-            />
-            <circle cx='8' cy='9' r='2' fill='#1d9bf0' />
-            <circle cx='24' cy='9' r='2' fill='#2dd4bf' />
-            <circle cx='16' cy='23' r='2.5' fill='#38bdf8' />
-            <circle cx='16' cy='23' r='4.5' fill='#38bdf8' opacity='0.18' />
-            <line
-              x1='11'
-              y1='16.5'
-              x2='21'
-              y2='16.5'
-              stroke='url(#logoGradM)'
-              strokeWidth='1'
-              strokeDasharray='2 2'
-              opacity='0.5'
-            />
-          </svg>
+        <a href='#' onClick={close} className='flex items-center gap-2.5 mb-4'>
+          <VarAILogo size={40} />
           <span
             className='font-serif text-2xl font-semibold'
-            style={{ color: "var(--text)" }}
+            style={{ color: "var(--text)", letterSpacing: "0.04em" }}
           >
-            Var<span className='shine-text'>AI</span>
+            Var
+            <span className='shine-text' style={{ letterSpacing: "0.04em" }}>
+              AI
+            </span>
           </span>
         </a>
         {links.map(([label, href]) => (
@@ -453,13 +442,14 @@ function Navbar() {
           onClick={close}
           className='btn-glow mt-4 px-10 py-4 text-sm tracking-widest uppercase rounded-sm inline-block'
         >
-          <span>Join Waitlist →</span>
+          <span>Join Waitlist</span>
         </a>
       </div>
     </>
   );
 }
 
+// ════════ HERO
 function Hero() {
   return (
     <section
@@ -508,25 +498,24 @@ function Hero() {
             AI-Powered Chartered Accountancy
           </span>
         </div>
-        {/* ── FIXED H1: added hero-title class, adjusted lineHeight & spacing ── */}
         <h1
           className='hero-title font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6'
           style={{
             color: "var(--text)",
-            lineHeight: 1.32,
+            lineHeight: 1.18,
             letterSpacing: "-0.01em",
-            wordSpacing: "0.04em",
           }}
         >
-          Your Taxes. Done <span className='shine-text'>Smarter</span> —<br />
+          Your Taxes. Done <span className='shine-text'>Smarter</span>
+          <br />
           With AI + Real CAs
         </h1>
         <p
           className='text-base leading-relaxed max-w-md mb-10'
           style={{ color: "var(--text-muted)" }}
         >
-          From ITR-1 to GST filings — VarAI combines intelligent agents,
-          automation, and certified Chartered Accountants to maximize your
+          From GST filings to ITR — VarAI combines intelligent agents,
+          automation, and certified Chartered Accountants to maximise your
           returns with zero stress.
         </p>
         <div className='flex flex-wrap gap-4'>
@@ -535,7 +524,7 @@ function Hero() {
             className='btn-glow inline-flex items-center gap-2 px-8 py-4 text-sm tracking-widest uppercase rounded-sm active:scale-95'
           >
             <span className='flex items-center gap-2 font-semibold'>
-              Get Started <ArrowRight size={15} />
+              Get Started 
             </span>
           </a>
           <a
@@ -566,8 +555,11 @@ function Hero() {
           ))}
         </div>
       </div>
+
+      {/* Floating Cards */}
       <div className='hidden md:flex items-center justify-center px-8 py-20 animate-fadeup-d2 relative z-10'>
         <div className='relative w-96 h-[460px]'>
+          {/* Card 1 — AI Tax Optimization */}
           <div
             className='animate-float-1 absolute top-0 left-4 right-4 rounded-2xl p-5 hero-card'
             style={{
@@ -689,12 +681,14 @@ function Hero() {
               ))}
             </div>
             <div
-              className='mt-3 text-xs text-center'
+              className='mt-3 text-xs text-center flex items-center justify-center gap-1'
               style={{ color: "var(--teal)" }}
             >
-              ⚡ AI Suggestion Engine Active
+              <Zap size={11} /> AI Suggestion Engine Active
             </div>
           </div>
+
+          {/* Card 2 — GST Agent Console */}
           <div
             className='animate-float-2 absolute rounded-xl overflow-hidden hero-card hero-card-teal'
             style={{
@@ -734,10 +728,10 @@ function Hero() {
               <div style={{ color: "rgba(45,212,191,0.5)" }}>
                 $ gst_agent --execute
               </div>
+              <div style={{ color: "var(--teal)" }}>✔ GSTIN validated</div>
               <div style={{ color: "var(--teal)" }}>✔ GSTR-1 Filed</div>
               <div style={{ color: "var(--teal)" }}>✔ GSTR-3B Filed</div>
-              <div style={{ color: "var(--teal)" }}>✔ Reconciliation Done</div>
-              <div style={{ color: "#4ade80" }}>✔ 0 Penalties</div>
+              <div style={{ color: "#4ade80" }}>✔ ITC Maximised</div>
               <div className='flex items-center gap-1 mt-1'>
                 <span style={{ color: "rgba(45,212,191,0.4)" }}>status:</span>
                 <span
@@ -752,6 +746,8 @@ function Hero() {
               </div>
             </div>
           </div>
+
+          {/* Card 3 — Compliance Score */}
           <div
             className='animate-float-3 absolute rounded-xl overflow-hidden hero-card'
             style={{
@@ -862,25 +858,26 @@ function Hero() {
   );
 }
 
+// ════════ SERVICES
 const serviceGroups = {
   Individual: [
     {
       num: "01",
       Icon: BarChart2,
       name: "ITR-1 Filing (AI Assisted)",
-      desc: "Automated tax filing with AI agents extracting and optimizing deductions.",
+      desc: "Automated tax filing with AI agents extracting and optimizing deductions — PDFs, images and Excel all supported.",
     },
     {
       num: "02",
       Icon: Brain,
       name: "Tax Optimization Engine",
-      desc: "Multi-agent system that asks smart questions, analyzes income, and maximizes returns legally.",
+      desc: "Multi-agent system that asks smart questions, analyzes income, and maximizes your returns legally.",
     },
     {
       num: "03",
       Icon: TrendingUp,
       name: "Financial Insights",
-      desc: "Understand your tax behavior, savings opportunities, and future planning.",
+      desc: "Understand your tax behaviour, savings opportunities, and plan ahead with AI-powered recommendations.",
     },
   ],
   Business: [
@@ -888,19 +885,19 @@ const serviceGroups = {
       num: "04",
       Icon: FileText,
       name: "GST Compliance (Automated)",
-      desc: "End-to-end GST filing with auto data pull and reconciliation.",
+      desc: "Upload invoices and let VarAI extract fields, validate GSTINs, reconcile GSTR-2A and maximise your ITC.",
     },
     {
       num: "05",
       Icon: BookOpen,
       name: "AI Bookkeeping & Reports",
-      desc: "Auto-generated P&L, balance sheets, and MIS reports.",
+      desc: "Auto-generated P&L, balance sheets, and MIS reports — always accurate, always ready.",
     },
     {
       num: "06",
       Icon: UserCheck,
       name: "CA Advisory Layer",
-      desc: "Every filing reviewed by certified Chartered Accountants for accuracy.",
+      desc: "Every filing reviewed and approved by a certified Chartered Accountant before it reaches the portal.",
     },
   ],
 };
@@ -967,7 +964,7 @@ function ServiceCard({ num, Icon, name, desc, delay }) {
       style={{ transitionDelay: `${delay}ms` }}
     >
       <div
-        className='w-12 h-12 rounded-xl flex items-center justify-center mb-4'
+        className='w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300'
         style={{
           background: "rgba(29,155,240,0.1)",
           border: "1px solid rgba(29,155,240,0.22)",
@@ -992,6 +989,7 @@ function ServiceCard({ num, Icon, name, desc, delay }) {
   );
 }
 
+// ════════ HOW IT WORKS
 const steps = [
   {
     num: "01",
@@ -1055,8 +1053,9 @@ function HowItWorks() {
           className='font-serif text-4xl md:text-5xl font-semibold'
           style={{
             color: "var(--text)",
-            lineHeight: 1.35,
-            letterSpacing: "-0.01em",
+            letterSpacing: "0.05em",
+            wordSpacing: "0.14em",
+            lineHeight: 1.38,
           }}
         >
           Built Like an <span className='shine-text'>AI System</span>,<br />
@@ -1077,12 +1076,21 @@ function StepCard({ num, Icon, title, desc, delay }) {
   return (
     <div
       ref={ref}
-      className='reveal step-card card-shine rounded-xl p-6 text-center'
+      className='reveal step-card card-shine rounded-xl p-6 text-center relative overflow-hidden'
       style={{
         border: "1px solid var(--border)",
         transitionDelay: `${delay}ms`,
       }}
     >
+      <div
+        className='absolute top-0 left-0 right-0 h-0.5'
+        style={{
+          background:
+            "linear-gradient(90deg,transparent,#1d9bf0,#2dd4bf,#1d9bf0,transparent)",
+          boxShadow:
+            "0 0 8px rgba(29,155,240,0.8),0 0 16px rgba(45,212,191,0.4)",
+        }}
+      />
       <div
         className='w-11 h-11 rounded-xl flex items-center justify-center mb-4 mx-auto'
         style={{
@@ -1108,6 +1116,7 @@ function StepCard({ num, Icon, title, desc, delay }) {
   );
 }
 
+// ════════ WHY VARAI
 const whyItems = [
   {
     Icon: Zap,
@@ -1170,11 +1179,12 @@ function WhyUs() {
           className='font-serif text-4xl md:text-5xl font-semibold mb-6'
           style={{
             color: "var(--text)",
-            lineHeight: 1.35,
-            letterSpacing: "-0.01em",
+            letterSpacing: "0.05em",
+            wordSpacing: "0.14em",
+            lineHeight: 1.38,
           }}
         >
-          Not Just Filing —<br />
+          Not Just Filing<br />
           <span className='shine-text'>Intelligent</span> Tax Automation
         </h2>
         <p
@@ -1257,12 +1267,12 @@ function WhyCard({ Icon, title, text, progress }) {
   );
 }
 
-// ════════ VISION — Redesigned Bento Grid ════════
+// ════════ PRODUCT VISION
 function Vision() {
   const ref = useReveal();
   return (
     <section
-      className='py-24 px-6 md:px-16 relative overflow-hidden grid-bg'
+      className='py-20 px-6 md:px-16 relative overflow-hidden grid-bg'
       style={{ background: "var(--bg)" }}
     >
       <div
@@ -1270,488 +1280,451 @@ function Vision() {
         style={{
           width: 500,
           height: 500,
-          top: "-100px",
-          right: "-100px",
-          background: "rgba(29,155,240,0.05)",
+          top: "0",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "rgba(29,155,240,0.04)",
         }}
       />
-      <div
-        className='orb'
-        style={{
-          width: 300,
-          height: 300,
-          bottom: "-60px",
-          left: "-60px",
-          background: "rgba(45,212,191,0.04)",
-        }}
-      />
-
-      <div ref={ref} className='reveal max-w-6xl mx-auto relative z-10'>
-        <div className='text-center mb-14'>
-          <p
-            className='text-xs tracking-widest uppercase mb-3'
-            style={{ color: "var(--blue-bright)" }}
-          >
-            Product Vision
-          </p>
-          <h2
-            className='font-serif text-4xl md:text-5xl font-semibold'
-            style={{ color: "var(--text)", lineHeight: 1.2 }}
-          >
-            What We're <span className='shine-text'>Building</span>
-          </h2>
-        </div>
-
-        {/* ══ ROW 1: equal 1fr 1fr columns ══ */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 14,
-            marginBottom: 14,
-          }}
+      <div ref={ref} className='reveal max-w-5xl mx-auto relative z-10'>
+        <p
+          className='text-xs tracking-widest uppercase mb-3 text-center'
+          style={{ color: "var(--blue-bright)" }}
         >
-          {/* Card 01 — Agentic AI — icon on top, content below */}
+          Product Vision
+        </p>
+        <h2
+          className='font-serif text-4xl md:text-5xl font-semibold mb-12 text-center'
+          style={{ color: "var(--text)", lineHeight: 1.2 }}
+        >
+          What We're <span className='shine-text'>Building</span>
+        </h2>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-5 mb-5'>
           <div
-            className='vcard rounded-2xl'
+            className='vision-item card-shine rounded-2xl relative overflow-hidden'
             style={{
-              border: "1px solid rgba(29,155,240,0.28)",
-              padding: "36px 32px",
-              minHeight: 200,
+              border: "1px solid rgba(29,155,240,0.3)",
+              background: "var(--bg-card)",
+              boxShadow: "0 0 32px rgba(29,155,240,0.1)",
+              padding: "2.2rem",
             }}
           >
-            <div className='scanline-bar' style={{ top: 0 }} />
             <div
-              className='vcard-icon'
+              className='absolute top-0 left-0 right-0 h-0.5'
               style={{
-                width: 56,
-                height: 56,
-                flexShrink: 0,
-                borderRadius: 16,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "rgba(29,155,240,0.13)",
+                background:
+                  "linear-gradient(90deg,transparent,#1d9bf0,#2dd4bf,transparent)",
+              }}
+            />
+            <div
+              className='w-16 h-16 rounded-2xl flex items-center justify-center mb-6'
+              style={{
+                background: "rgba(29,155,240,0.12)",
                 border: "1px solid rgba(29,155,240,0.3)",
-                marginBottom: 18,
+                boxShadow: "0 0 20px rgba(29,155,240,0.2)",
               }}
             >
-              <Brain size={24} style={{ color: "var(--blue-bright)" }} />
+              <Brain size={30} style={{ color: "var(--blue-bright)" }} />
             </div>
             <div
-              className='font-num text-xs font-bold shine-text'
-              style={{ marginBottom: 8 }}
-            >
-              01
-            </div>
-            <div
-              className='font-serif text-xl font-semibold'
-              style={{
-                color: "var(--text)",
-                marginBottom: 10,
-                lineHeight: 1.25,
-              }}
+              className='font-serif text-2xl font-semibold mb-4'
+              style={{ color: "var(--text)", lineHeight: 1.25 }}
             >
               Agentic AI Architecture
             </div>
             <div
-              className='text-sm leading-relaxed'
-              style={{
-                color: "var(--text-muted)",
-                maxWidth: 420,
-                marginBottom: 20,
-              }}
+              className='text-sm leading-relaxed mb-6'
+              style={{ color: "var(--text-muted)" }}
             >
               Multi-agent AI system inspired by modern autonomous architectures
               — planning, reasoning, and acting like a real CA firm.
             </div>
-            {/* tag row */}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div className='flex flex-wrap gap-2'>
               {["Planning", "Reasoning", "Multi-Agent", "Autonomous"].map(
-                (t) => (
+                (tag) => (
                   <span
-                    key={t}
+                    key={tag}
+                    className='text-xs px-3 py-1.5 rounded-full font-semibold'
                     style={{
-                      padding: "3px 10px",
-                      borderRadius: 99,
-                      fontSize: 10,
-                      fontFamily: "Barlow Condensed",
-                      fontWeight: 700,
-                      letterSpacing: "0.05em",
                       background: "rgba(29,155,240,0.1)",
-                      border: "1px solid rgba(29,155,240,0.22)",
+                      border: "1px solid rgba(29,155,240,0.28)",
                       color: "var(--blue-bright)",
                     }}
                   >
-                    {t}
+                    {tag}
                   </span>
                 ),
               )}
             </div>
           </div>
 
-          {/* Card 02 — Voice Tax — with animated waveform */}
           <div
-            className='vcard rounded-2xl'
+            className='vision-item card-shine rounded-2xl relative overflow-hidden'
             style={{
-              border: "1px solid rgba(45,212,191,0.28)",
-              padding: "32px 28px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
+              border: "1px solid rgba(45,212,191,0.3)",
+              background: "var(--bg-card)",
+              boxShadow: "0 0 32px rgba(45,212,191,0.08)",
+              padding: "2.2rem",
             }}
           >
-            <div>
-              <div
-                className='vcard-icon'
-                style={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: 16,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(45,212,191,0.13)",
-                  border: "1px solid rgba(45,212,191,0.3)",
-                  marginBottom: 14,
-                }}
-              >
-                <Mic size={22} style={{ color: "var(--teal)" }} />
-              </div>
-              <div
-                className='font-num text-xs font-bold'
-                style={{ color: "var(--teal)", marginBottom: 6 }}
-              >
-                02
-              </div>
-              <div
-                className='font-serif text-lg font-semibold'
-                style={{
-                  color: "var(--text)",
-                  marginBottom: 6,
-                  lineHeight: 1.25,
-                }}
-              >
-                Voice Tax Assistant
-              </div>
-              <div
-                className='text-sm leading-relaxed'
-                style={{ color: "var(--text-muted)" }}
-              >
-                File taxes just by speaking — no forms, no friction.
-              </div>
-            </div>
-            {/* animated waveform */}
             <div
+              className='absolute top-0 left-0 right-0 h-0.5'
               style={{
-                display: "flex",
-                alignItems: "flex-end",
-                gap: 3,
-                height: 36,
-                marginTop: 20,
-                paddingBottom: 4,
+                background:
+                  "linear-gradient(90deg,transparent,#2dd4bf,#1d9bf0,transparent)",
+              }}
+            />
+            <div
+              className='w-16 h-16 rounded-2xl flex items-center justify-center mb-6'
+              style={{
+                background: "rgba(45,212,191,0.12)",
+                border: "1px solid rgba(45,212,191,0.3)",
+                boxShadow: "0 0 20px rgba(45,212,191,0.15)",
               }}
             >
-              {[14, 22, 30, 18, 26, 20, 34, 16, 28, 12, 30, 20].map((h, i) => (
+              <Mic size={30} style={{ color: "var(--teal)" }} />
+            </div>
+            <div
+              className='font-serif text-2xl font-semibold mb-4'
+              style={{ color: "var(--text)", lineHeight: 1.25 }}
+            >
+              Voice Tax Assistant
+            </div>
+            <div
+              className='text-sm leading-relaxed mb-6'
+              style={{ color: "var(--text-muted)" }}
+            >
+              File taxes just by speaking — no forms, no friction.
+            </div>
+            <div
+              className='flex items-end gap-1 mb-3'
+              style={{ height: "52px" }}
+            >
+              {[
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                19, 20, 21, 22, 23, 24,
+              ].map((i) => (
                 <div
                   key={i}
-                  className='wbar'
+                  className='wave-bar flex-1'
                   style={{
-                    flex: 1,
-                    height: h,
-                    background: `linear-gradient(180deg,var(--teal),rgba(45,212,191,0.25))`,
+                    background:
+                      "linear-gradient(to bottom,rgba(45,212,191,1) 0%,rgba(45,212,191,0.35) 100%)",
                   }}
                 />
               ))}
             </div>
             <div
-              style={{
-                fontSize: 9,
-                fontFamily: "Mulish",
-                color: "var(--teal)",
-                opacity: 0.6,
-                marginTop: 6,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-              }}
+              className='text-xs tracking-widest uppercase font-semibold'
+              style={{ color: "rgba(45,212,191,0.5)" }}
             >
-              Live voice processing
+              Live Voice Processing
             </div>
           </div>
         </div>
 
-        {/* ══ ROW 2: 3 equal cards ══ */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: 14,
-            marginBottom: 14,
-          }}
-        >
-          {/* Card 03 — Auto Bank Sync */}
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-5 mb-6'>
           <div
-            className='vcard rounded-2xl'
+            className='vision-item card-shine rounded-2xl relative overflow-hidden p-7'
             style={{
-              border: "1px solid rgba(29,155,240,0.22)",
-              padding: "28px 24px",
+              border: "1px solid rgba(29,155,240,0.28)",
+              background: "var(--bg-card)",
+              boxShadow: "0 0 24px rgba(29,155,240,0.08)",
             }}
           >
             <div
-              className='vcard-icon'
+              className='absolute top-0 left-0 right-0 h-0.5'
               style={{
-                width: 48,
-                height: 48,
-                borderRadius: 14,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                background:
+                  "linear-gradient(90deg,transparent,#1d9bf0,transparent)",
+              }}
+            />
+            <div
+              className='w-14 h-14 rounded-2xl flex items-center justify-center mb-5'
+              style={{
                 background: "rgba(29,155,240,0.1)",
-                border: "1px solid rgba(29,155,240,0.25)",
-                marginBottom: 14,
+                border: "1px solid rgba(29,155,240,0.28)",
+                boxShadow: "0 0 14px rgba(29,155,240,0.15)",
               }}
             >
-              <Link2 size={20} style={{ color: "var(--blue-bright)" }} />
+              <Link2 size={24} style={{ color: "var(--blue-bright)" }} />
             </div>
             <div
-              className='font-num text-xs font-bold shine-text'
-              style={{ marginBottom: 5 }}
-            >
-              03
-            </div>
-            <div
-              className='font-semibold'
-              style={{
-                color: "var(--text)",
-                fontSize: "0.95rem",
-                marginBottom: 6,
-                lineHeight: 1.3,
-              }}
+              className='font-serif text-lg font-semibold mb-3'
+              style={{ color: "var(--text)", lineHeight: 1.3 }}
             >
               Auto Bank Sync
             </div>
             <div
-              className='text-xs leading-relaxed'
-              style={{ color: "var(--text-muted)", marginBottom: 16 }}
+              className='text-sm leading-relaxed mb-5'
+              style={{ color: "var(--text-muted)" }}
             >
               Bank & govt data fetched automatically — zero manual entry.
             </div>
-            {/* bank tags */}
-            <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+            <div className='flex flex-wrap gap-1.5'>
               {["SBI", "HDFC", "ICICI", "Axis", "Kotak"].map((b) => (
-                <div
+                <span
                   key={b}
+                  className='text-xs px-2.5 py-1 rounded font-semibold'
                   style={{
-                    padding: "3px 8px",
-                    borderRadius: 99,
                     background: "rgba(29,155,240,0.08)",
-                    border: "1px solid rgba(29,155,240,0.18)",
-                    fontSize: 9,
+                    border: "1px solid rgba(29,155,240,0.22)",
                     color: "var(--blue-bright)",
-                    fontFamily: "Barlow Condensed",
-                    fontWeight: 700,
-                    letterSpacing: "0.04em",
                   }}
                 >
                   {b}
-                </div>
+                </span>
               ))}
             </div>
           </div>
 
-          {/* Card 04 — Real-Time Optimization */}
           <div
-            className='vcard rounded-2xl'
+            className='vision-item card-shine rounded-2xl relative overflow-hidden p-7'
             style={{
-              border: "1px solid rgba(45,212,191,0.22)",
-              padding: "28px 24px",
+              border: "1px solid rgba(45,212,191,0.28)",
+              background: "var(--bg-card)",
+              boxShadow: "0 0 24px rgba(45,212,191,0.07)",
             }}
           >
             <div
-              className='vcard-icon'
+              className='absolute top-0 left-0 right-0 h-0.5'
               style={{
-                width: 48,
-                height: 48,
-                borderRadius: 14,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                background:
+                  "linear-gradient(90deg,transparent,#2dd4bf,transparent)",
+              }}
+            />
+            <div
+              className='w-14 h-14 rounded-2xl flex items-center justify-center mb-5'
+              style={{
                 background: "rgba(45,212,191,0.1)",
-                border: "1px solid rgba(45,212,191,0.25)",
-                marginBottom: 14,
+                border: "1px solid rgba(45,212,191,0.28)",
+                boxShadow: "0 0 14px rgba(45,212,191,0.12)",
               }}
             >
-              <BarChart2 size={20} style={{ color: "var(--teal)" }} />
+              <BarChart2 size={24} style={{ color: "var(--teal)" }} />
             </div>
             <div
-              className='font-num text-xs font-bold'
-              style={{ color: "var(--teal)", marginBottom: 5 }}
-            >
-              04
-            </div>
-            <div
-              className='font-semibold'
-              style={{
-                color: "var(--text)",
-                fontSize: "0.95rem",
-                marginBottom: 6,
-                lineHeight: 1.3,
-              }}
+              className='font-serif text-lg font-semibold mb-3'
+              style={{ color: "var(--text)", lineHeight: 1.3 }}
             >
               Real-Time Optimization
             </div>
             <div
-              className='text-xs leading-relaxed'
-              style={{ color: "var(--text-muted)", marginBottom: 16 }}
+              className='text-sm leading-relaxed mb-5'
+              style={{ color: "var(--text-muted)" }}
             >
               Live tax-saving engine running 24/7 — finds deductions as you go.
             </div>
-            {/* mini rising bar chart */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                gap: 4,
-                height: 26,
-              }}
-            >
-              {[40, 55, 45, 72, 60, 88, 70, 100].map((h, i) => (
-                <div
-                  key={i}
-                  style={{
-                    flex: 1,
-                    height: `${h}%`,
-                    borderRadius: "3px 3px 0 0",
-                    background: `linear-gradient(180deg,var(--teal),rgba(45,212,191,0.2))`,
-                    opacity: 0.7 + i * 0.04,
-                  }}
-                />
-              ))}
+            <div className='flex items-center gap-4 mt-1'>
+              <div
+                className='relative flex-shrink-0'
+                style={{ width: 56, height: 56 }}
+              >
+                <svg width='56' height='56' viewBox='0 0 56 56'>
+                  <defs>
+                    <linearGradient
+                      id='ringGrad'
+                      x1='0%'
+                      y1='0%'
+                      x2='100%'
+                      y2='0%'
+                    >
+                      <stop offset='0%' stopColor='#2dd4bf' />
+                      <stop offset='100%' stopColor='#1d9bf0' />
+                    </linearGradient>
+                  </defs>
+                  <circle
+                    cx='28'
+                    cy='28'
+                    r='24'
+                    fill='none'
+                    stroke='rgba(45,212,191,0.1)'
+                    strokeWidth='2'
+                  />
+                  <circle
+                    cx='28'
+                    cy='28'
+                    r='24'
+                    fill='none'
+                    stroke='url(#ringGrad)'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeDasharray='150.8'
+                    strokeDashoffset='22.6'
+                    transform='rotate(-90 28 28)'
+                    style={{ filter: "drop-shadow(0 0 3px #2dd4bf)" }}
+                  />
+                  <circle
+                    cx='28'
+                    cy='28'
+                    r='16'
+                    fill='none'
+                    stroke='rgba(29,155,240,0.12)'
+                    strokeWidth='1.5'
+                  />
+                  <circle
+                    cx='28'
+                    cy='28'
+                    r='16'
+                    fill='none'
+                    stroke='#1d9bf0'
+                    strokeWidth='1.5'
+                    strokeLinecap='round'
+                    strokeDasharray='100.5'
+                    strokeDashoffset='10'
+                    transform='rotate(-90 28 28)'
+                    opacity='0.7'
+                  />
+                  <circle
+                    cx='28'
+                    cy='28'
+                    r='4'
+                    fill='#2dd4bf'
+                    style={{ filter: "drop-shadow(0 0 4px #2dd4bf)" }}
+                  />
+                  <text
+                    x='28'
+                    y='32'
+                    textAnchor='middle'
+                    fontSize='5'
+                    fontFamily='Barlow Condensed'
+                    fontWeight='700'
+                    fill='#e8f0fe'
+                  >
+                    85%
+                  </text>
+                </svg>
+              </div>
+              <div className='flex flex-col gap-1.5 flex-1'>
+                {[
+                  ["80C", "₹1.5L", 95],
+                  ["HRA", "₹48K", 78],
+                  ["80D", "₹25K", 60],
+                ].map(([label, val, pct]) => (
+                  <div key={label} className='flex items-center gap-2'>
+                    <span
+                      className='font-num text-xs font-bold w-7'
+                      style={{ color: "var(--teal)" }}
+                    >
+                      {label}
+                    </span>
+                    <div
+                      className='flex-1 h-1 rounded-full overflow-hidden'
+                      style={{ background: "rgba(45,212,191,0.1)" }}
+                    >
+                      <div
+                        style={{
+                          width: `${pct}%`,
+                          height: "100%",
+                          background: "linear-gradient(90deg,#2dd4bf,#1d9bf0)",
+                          boxShadow: "0 0 4px rgba(45,212,191,0.6)",
+                        }}
+                      />
+                    </div>
+                    <span
+                      className='font-num text-xs font-bold'
+                      style={{ color: "var(--blue-bright)" }}
+                    >
+                      {val}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Card 05 — WhatsApp Native */}
           <div
-            className='vcard rounded-2xl'
+            className='vision-item card-shine rounded-2xl relative overflow-hidden p-7'
             style={{
-              border: "1px solid rgba(29,155,240,0.22)",
-              padding: "28px 24px",
+              border: "1px solid rgba(29,155,240,0.28)",
+              background: "var(--bg-card)",
+              boxShadow: "0 0 24px rgba(29,155,240,0.08)",
             }}
           >
             <div
-              className='vcard-icon'
+              className='absolute top-0 left-0 right-0 h-0.5'
               style={{
-                width: 48,
-                height: 48,
-                borderRadius: 14,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                background:
+                  "linear-gradient(90deg,transparent,#1d9bf0,transparent)",
+              }}
+            />
+            <div
+              className='w-14 h-14 rounded-2xl flex items-center justify-center mb-5'
+              style={{
                 background: "rgba(29,155,240,0.1)",
-                border: "1px solid rgba(29,155,240,0.25)",
-                marginBottom: 14,
+                border: "1px solid rgba(29,155,240,0.28)",
+                boxShadow: "0 0 14px rgba(29,155,240,0.15)",
               }}
             >
-              <Smartphone size={20} style={{ color: "var(--blue-bright)" }} />
+              <Smartphone size={24} style={{ color: "var(--blue-bright)" }} />
             </div>
             <div
-              className='font-num text-xs font-bold shine-text'
-              style={{ marginBottom: 5 }}
-            >
-              05
-            </div>
-            <div
-              className='font-semibold'
-              style={{
-                color: "var(--text)",
-                fontSize: "0.95rem",
-                marginBottom: 6,
-                lineHeight: 1.3,
-              }}
+              className='font-serif text-lg font-semibold mb-3'
+              style={{ color: "var(--text)", lineHeight: 1.3 }}
             >
               WhatsApp Native
             </div>
             <div
-              className='text-xs leading-relaxed'
-              style={{ color: "var(--text-muted)", marginBottom: 16 }}
+              className='text-sm leading-relaxed mb-4'
+              style={{ color: "var(--text-muted)" }}
             >
               Full tax experience on chat — upload, ask, track, done.
             </div>
-            {/* chat bubbles */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            <div className='flex flex-col gap-2'>
               <div
+                className='self-end text-xs px-3 py-1.5 rounded-xl rounded-br-sm font-medium flex items-center gap-1.5'
                 style={{
-                  alignSelf: "flex-end",
-                  background: "rgba(29,155,240,0.18)",
-                  border: "1px solid rgba(29,155,240,0.25)",
-                  borderRadius: "10px 10px 2px 10px",
-                  padding: "4px 10px",
-                  fontSize: 9,
+                  background: "rgba(29,155,240,0.15)",
                   color: "var(--blue-bright)",
-                  fontFamily: "Mulish",
+                  border: "1px solid rgba(29,155,240,0.25)",
                 }}
               >
-                Upload Form 16 📎
+                <Paperclip size={10} />
+                Upload Form 16
               </div>
               <div
+                className='self-start text-xs px-3 py-1.5 rounded-xl rounded-bl-sm font-medium flex items-center gap-1.5'
                 style={{
-                  alignSelf: "flex-start",
-                  background: "rgba(45,212,191,0.1)",
-                  border: "1px solid rgba(45,212,191,0.2)",
-                  borderRadius: "10px 10px 10px 2px",
-                  padding: "4px 10px",
-                  fontSize: 9,
-                  color: "var(--teal)",
-                  fontFamily: "Mulish",
+                  background: "rgba(34,197,94,0.12)",
+                  color: "#4ade80",
+                  border: "1px solid rgba(34,197,94,0.25)",
                 }}
               >
-                ✔ ITR filed! Refund: ₹18,400
+                <CheckCircle size={10} />
+                ITR filed! Refund: ₹18,400
               </div>
             </div>
           </div>
         </div>
 
-        {/* ══ GOAL BANNER ══ */}
         <div
+          className='relative p-7 rounded-2xl overflow-hidden'
           style={{
-            position: "relative",
-            padding: "28px 32px",
-            borderRadius: 20,
-            overflow: "hidden",
-            background: "rgba(29,155,240,0.05)",
-            border: "1px solid rgba(29,155,240,0.22)",
+            background:
+              "linear-gradient(135deg,rgba(29,155,240,0.08),rgba(45,212,191,0.05))",
+            border: "1px solid rgba(29,155,240,0.25)",
           }}
         >
           <div
+            className='absolute top-0 right-0 w-48 h-48 rounded-full pointer-events-none'
             style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(135deg,rgba(29,155,240,0.07) 0%,transparent 50%,rgba(45,212,191,0.05) 100%)",
-              pointerEvents: "none",
+              background: "rgba(45,212,191,0.06)",
+              filter: "blur(50px)",
             }}
           />
-          <div
-            style={{
-              position: "relative",
-              zIndex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 16,
-            }}
-          >
+          <div className='relative z-10 flex flex-col md:flex-row items-center justify-between gap-5'>
             <div>
               <p
-                className='text-xs tracking-widest uppercase'
-                style={{ color: "var(--teal)", marginBottom: 6 }}
+                className='text-xs tracking-widest uppercase mb-2 flex items-center gap-1.5'
+                style={{ color: "var(--teal)" }}
               >
-                🎯 Our Goal
+                <Target size={11} />
+                Our Goal
               </p>
               <p
-                className='font-serif text-xl font-semibold'
-                style={{ color: "var(--text)", lineHeight: 1.3 }}
+                className='font-serif text-xl md:text-2xl font-semibold'
+                style={{ color: "var(--text)" }}
               >
                 Fully automated tax filing with{" "}
                 <span className='shine-text'>CA verification in the loop</span>
@@ -1759,7 +1732,7 @@ function Vision() {
             </div>
             <a
               href='#waitlist'
-              className='btn-glow flex-shrink-0 px-7 py-3 text-sm font-semibold tracking-widest uppercase rounded-sm inline-block'
+              className='btn-glow flex-shrink-0 px-7 py-3.5 text-sm font-bold tracking-widest uppercase rounded-sm inline-block'
             >
               <span>Be Part of It →</span>
             </a>
@@ -1770,6 +1743,7 @@ function Vision() {
   );
 }
 
+// ════════ FAQ
 const faqs = [
   {
     q: "Is this fully automated?",
@@ -1848,8 +1822,8 @@ function FAQ() {
               </button>
               <div className={`accordion-body ${open === i ? "open" : ""}`}>
                 <div
-                  className='px-6 pb-5 text-sm leading-relaxed'
-                  style={{ color: "var(--text-muted)", paddingTop: 12 }}
+                  className='faq-answer px-6 pb-5 text-sm leading-relaxed'
+                  style={{ color: "var(--text-muted)", paddingTop: "12px" }}
                 >
                   {faq.a}
                 </div>
@@ -1862,6 +1836,7 @@ function FAQ() {
   );
 }
 
+// ════════ WAITLIST
 function Waitlist() {
   const [spots, setSpots] = useState(12);
   const [submitted, setSubmitted] = useState(false);
@@ -1944,14 +1919,15 @@ function Waitlist() {
           Early Access
         </p>
         <h2
-          className='font-serif text-4xl md:text-5xl font-semibold mb-5'
+          className='font-serif text-4xl md:text-5xl font-semibold mb-6'
           style={{
             color: "var(--text)",
-            lineHeight: 1.38,
+            lineHeight: 1.28,
             letterSpacing: "-0.01em",
+            wordSpacing: "0.06em",
           }}
         >
-          Join VarAI &amp; Unlock
+          Join VarAI & Unlock
           <br />
           <span className='shine-text'>Smarter Tax Savings</span>
         </h2>
@@ -2005,14 +1981,15 @@ function Waitlist() {
                 style={{ background: "var(--border)" }}
               />
               <span
-                className='text-xs px-2 py-0.5 rounded-full font-semibold'
+                className='text-xs px-2 py-0.5 rounded-full font-semibold flex items-center gap-1'
                 style={{
                   background: "rgba(45,212,191,0.12)",
                   color: "var(--teal)",
                   border: "1px solid rgba(45,212,191,0.3)",
                 }}
               >
-                ⚡ Filling Fast
+                <Zap size={10} />
+                Filling Fast
               </span>
             </div>
           </div>
@@ -2120,7 +2097,7 @@ function Waitlist() {
                   </>
                 ) : (
                   <>
-                    Join Waitlist <ArrowRight size={15} />
+                    Join Waitlist 
                   </>
                 )}
               </span>
@@ -2145,10 +2122,11 @@ function Waitlist() {
               <CheckCircle size={38} style={{ color: "var(--blue-bright)" }} />
             </div>
             <h3
-              className='font-serif text-4xl font-semibold mb-3'
+              className='font-serif text-4xl font-semibold mb-3 flex items-center justify-center gap-3'
               style={{ color: "var(--text)" }}
             >
-              You're In 🚀
+              You're In{" "}
+              <Rocket size={32} style={{ color: "var(--blue-bright)" }} />
             </h3>
             <p
               className='text-sm leading-relaxed'
@@ -2369,6 +2347,7 @@ function SelectField({ label, name, value, onChange, options }) {
   );
 }
 
+// ════════ TESTIMONIALS
 const testimonials = [
   {
     initials: "MS",
@@ -2417,32 +2396,71 @@ function Testimonials() {
   return (
     <section
       id='testimonials'
-      className='py-20 px-6 md:px-16 relative'
+      className='py-20 px-6 md:px-16 relative overflow-hidden'
       style={{ background: "var(--bg-card)" }}
     >
-      <div ref={ref} className='reveal mb-14'>
+      <div
+        className='orb'
+        style={{
+          width: 400,
+          height: 400,
+          top: "-60px",
+          right: "-60px",
+          background: "rgba(29,155,240,0.04)",
+        }}
+      />
+      <div ref={ref} className='reveal mb-14 relative z-10'>
         <p
-          className='text-xs tracking-widest uppercase mb-3'
+          className='text-xs tracking-widest uppercase mb-4'
           style={{ color: "var(--teal)" }}
         >
           Client Stories
         </p>
-        {/* ── FIXED: testi-h2 class ensures proper line height and no letter collision ── */}
         <h2
-          className='testi-h2 font-serif text-4xl md:text-5xl font-semibold'
-          style={{ color: "var(--text)" }}
+          className='font-serif text-4xl md:text-5xl font-semibold mb-6'
+          style={{ color: "var(--text)", lineHeight: 1.2 }}
         >
-          Trusted by <span className='shine-text'>Tirupur's</span> Textile &amp;
+          Trusted by <span className='shine-text'>Tirupur's</span>
           <br />
-          Trade Community
+          Textile & Trade Community
         </h2>
+        <div className='flex items-center gap-3'>
+          <div className='flex -space-x-2'>
+            {testimonials.map((t) => (
+              <div
+                key={t.initials}
+                className='w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2'
+                style={{
+                  background: "rgba(29,155,240,0.2)",
+                  borderColor: "var(--bg-card)",
+                  color: "var(--blue-bright)",
+                }}
+              >
+                {t.initials}
+              </div>
+            ))}
+          </div>
+          <div className='flex gap-0.5'>
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                size={12}
+                fill='var(--blue)'
+                style={{ color: "var(--blue)" }}
+              />
+            ))}
+          </div>
+          <span className='text-xs' style={{ color: "var(--text-muted)" }}>
+            5 verified reviews · 0 penalties
+          </span>
+        </div>
       </div>
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 relative z-10'>
         {testimonials.slice(0, 3).map((t) => (
           <TestCard key={t.name} {...t} />
         ))}
       </div>
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 md:w-2/3 mx-auto'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:max-w-3xl md:mx-auto relative z-10'>
         {testimonials.slice(3).map((t) => (
           <TestCard key={t.name} {...t} />
         ))}
@@ -2456,17 +2474,35 @@ function TestCard({ initials, name, role, stars, quote }) {
   return (
     <div
       ref={ref}
-      className='reveal test-card card-shine p-8 rounded-2xl'
+      className='reveal testi-card card-shine rounded-2xl p-7 relative overflow-hidden'
       style={{ border: "1px solid var(--border)" }}
     >
-      {/* Author on top */}
-      <div className='flex items-center gap-4 mb-5'>
+      <div
+        className='absolute top-0 left-0 bottom-0 w-0.5'
+        style={{
+          background:
+            "linear-gradient(180deg,transparent,#1d9bf0,#2dd4bf,transparent)",
+          boxShadow:
+            "0 0 8px rgba(29,155,240,0.6),0 0 16px rgba(45,212,191,0.3)",
+        }}
+      />
+      <div
+        className='absolute bottom-0 left-0 pointer-events-none'
+        style={{
+          width: 120,
+          height: 120,
+          background:
+            "radial-gradient(circle at 0% 100%,rgba(29,155,240,0.12),transparent 70%)",
+        }}
+      />
+      <div className='flex items-center gap-3 mb-5 relative z-10'>
         <div
-          className='w-11 h-11 rounded-full flex items-center justify-center font-serif text-sm font-semibold flex-shrink-0'
+          className='testi-avatar w-11 h-11 rounded-full flex items-center justify-center font-serif text-sm font-bold flex-shrink-0 transition-all duration-300'
           style={{
             background: "rgba(29,155,240,0.15)",
-            border: "1px solid rgba(29,155,240,0.3)",
+            border: "1px solid rgba(29,155,240,0.35)",
             color: "var(--blue-bright)",
+            boxShadow: "0 0 12px rgba(29,155,240,0.15)",
           }}
         >
           {initials}
@@ -2486,8 +2522,7 @@ function TestCard({ initials, name, role, stars, quote }) {
           </div>
         </div>
       </div>
-      {/* Stars */}
-      <div className='flex gap-1 mb-4'>
+      <div className='flex gap-0.5 mb-4'>
         {[...Array(stars)].map((_, i) => (
           <Star
             key={i}
@@ -2497,9 +2532,8 @@ function TestCard({ initials, name, role, stars, quote }) {
           />
         ))}
       </div>
-      {/* Quote */}
       <p
-        className='text-sm leading-relaxed'
+        className='text-sm leading-relaxed relative z-10'
         style={{ color: "var(--text-muted)" }}
       >
         "{quote}"
@@ -2508,6 +2542,7 @@ function TestCard({ initials, name, role, stars, quote }) {
   );
 }
 
+// ════════ FOOTER
 function Footer() {
   return (
     <footer
@@ -2525,71 +2560,16 @@ function Footer() {
           background: "rgba(29,155,240,0.04)",
         }}
       />
-      <div className='flex items-center justify-center gap-2.5 mb-2 relative z-10'>
-        <svg
-          width='28'
-          height='28'
-          viewBox='0 0 32 32'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <defs>
-            <linearGradient
-              id='logoGradF'
-              x1='0'
-              y1='0'
-              x2='32'
-              y2='32'
-              gradientUnits='userSpaceOnUse'
-            >
-              <stop offset='0%' stopColor='#1d9bf0' />
-              <stop offset='100%' stopColor='#2dd4bf' />
-            </linearGradient>
-          </defs>
-          <rect
-            width='32'
-            height='32'
-            rx='8'
-            fill='url(#logoGradF)'
-            opacity='0.12'
-          />
-          <rect
-            width='32'
-            height='32'
-            rx='8'
-            fill='none'
-            stroke='url(#logoGradF)'
-            strokeWidth='1'
-            opacity='0.5'
-          />
-          <path
-            d='M8 9 L16 23 L24 9'
-            stroke='url(#logoGradF)'
-            strokeWidth='2.5'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            fill='none'
-          />
-          <circle cx='8' cy='9' r='2' fill='#1d9bf0' />
-          <circle cx='24' cy='9' r='2' fill='#2dd4bf' />
-          <circle cx='16' cy='23' r='2.5' fill='#38bdf8' />
-          <circle cx='16' cy='23' r='4.5' fill='#38bdf8' opacity='0.18' />
-          <line
-            x1='11'
-            y1='16.5'
-            x2='21'
-            y2='16.5'
-            stroke='url(#logoGradF)'
-            strokeWidth='1'
-            strokeDasharray='2 2'
-            opacity='0.5'
-          />
-        </svg>
+      <div className='flex items-center justify-center gap-3 mb-2 relative z-10'>
+        <VarAILogo size={34} />
         <div
           className='font-serif text-3xl font-semibold'
-          style={{ color: "var(--text)" }}
+          style={{ color: "var(--text)", letterSpacing: "0.04em" }}
         >
-          Var<span className='shine-text'>AI</span>
+          Var
+          <span className='shine-text' style={{ letterSpacing: "0.04em" }}>
+            AI
+          </span>
         </div>
       </div>
       <p
@@ -2633,6 +2613,7 @@ function Footer() {
   );
 }
 
+// ════════ BACK TO TOP
 function BackToTop() {
   const [show, setShow] = useState(false);
   useEffect(() => {
@@ -2650,6 +2631,7 @@ function BackToTop() {
   );
 }
 
+// ════════ APP ROOT
 export default function CALandingPage() {
   return (
     <>
